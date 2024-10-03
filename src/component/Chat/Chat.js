@@ -8,67 +8,57 @@ import ReactScrollToBottom from "react-scroll-to-bottom";
 import closeIcon from "../../images/closeIcon.png";
 
 let socket;
-const ENDPOINT = "http://localhost:4500";  // Update to your server URL
+const ENDPOINT = process.env.REACT_APP_BACKEND_URL || "https://chatbackend-htse.onrender.com";  // Update with live server URL
 
 const Chat = () => {
     const [id, setId] = useState("");
     const [messages, setMessages] = useState([]);
 
-    // Function to send a message to the server
     const send = () => {
         const message = document.getElementById('chatInput').value;
         if (message.trim()) {
             socket.emit('message', { message, id });
             document.getElementById('chatInput').value = "";
-            playNotificationSound();  // Play sound when a message is sent
+            playNotificationSound();
         }
     };
 
-    // Function to play notification sound
     const playNotificationSound = () => {
-        const audio = new Audio('/yuppie.mp3');  // Path to your sound file in the public folder
+        const audio = new Audio('/yuppie.mp3');
         audio.play().catch((error) => {
             console.error("Audio play failed:", error);
         });
     };
 
     useEffect(() => {
-        // Create socket connection
         socket = socketIo(ENDPOINT, { transports: ['websocket'] });
 
-        // Set user ID once connected
         socket.on('connect', () => {
             setId(socket.id);
         });
 
-        // Emit 'joined' event when the user joins
         socket.emit('joined', { user });
 
-        // Event listener for welcome message
         socket.on('welcome', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
-            playNotificationSound();  // Play sound when welcome message is received
+            playNotificationSound();
         });
 
-        // Event listener for user joined
         socket.on('userJoined', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
-            playNotificationSound();  // Play sound when a user joins
+            playNotificationSound();
         });
 
-        // Event listener for new messages
         socket.on('sendMessage', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
-            playNotificationSound();  // Play sound when a new message is received
+            playNotificationSound();
         });
 
-        // Event listener for when a user leaves
         socket.on('leave', (data) => {
-            setMessages((prevMessages) => [...prevMessages, data]);  // Update message list when a user leaves
-            playNotificationSound();  // Play sound when a user leaves
+            setMessages((prevMessages) => [...prevMessages, data]);
+            playNotificationSound();
         });
 
-        // Cleanup on component unmount
         return () => {
             socket.emit('disconnect');
             socket.off();
@@ -101,6 +91,6 @@ const Chat = () => {
             </div>
         </div>
     );
-}
+};
 
 export default Chat;
