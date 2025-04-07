@@ -8,7 +8,7 @@ import ReactScrollToBottom from "react-scroll-to-bottom";
 import closeIcon from "../../images/closeIcon.png";
 
 let socket;
-const ENDPOINT = process.env.REACT_APP_BACKEND_URL || "https://chatbackend-htse.onrender.com";  // Update with live server URL
+const ENDPOINT = process.env.REACT_APP_BACKEND_URL || "http://localhost:4500";  // Update with live server URL
 
 const Chat = () => {
     const [id, setId] = useState("");
